@@ -1,4 +1,4 @@
-<h1 align="center">Auto Reff Pixelverse</h1>
+<h1 align="center">Auto Reff Pixelverse ( DWYOR )</h1>
 <h3 align="center">Tutorial How To Use This Bot</h3>
 
 - https://dashboard.pixelverse.xyz/ Register
