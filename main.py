@@ -8,6 +8,33 @@ from colorama import Fore, Style, init
 init(autoreset=True)
 fake = Faker()
 
+def nama():
+    art_lines = [
+        "   ___  ___            _       _               ______       _   ",
+        "  |  \\/  |           | |     | |              | ___ \\     | |  ",
+        "  | .  . | ___  _ __ | |_ ___| | _____ ____   | |_/ / ___ | |_ ",
+        "  | |\\/| |/ _ \\| '_ \\| __/ _ \\ |/ / __|_  /   | ___ \\/ _ \\| __|",
+        "  | |  | | (_) | | | | ||  __/   <\\__ \\/ /    | |_/ / (_) | |_ ",
+        "  \\_|  |_|\\___/|_| |_|\\__\\___|_|\\_\\___/___|   \\____/ \\___/ \\__|",
+        "                                                                ",
+        "                                                                "
+    ]
+
+    max_length = max(len(line) for line in art_lines)
+
+    border = '#' * (max_length + 4)
+
+    print(border)
+    for line in art_lines:
+        print(f"# {line} #")
+    print(border)
+
+    print(f"{Fore.GREEN}Terima kasih Telah Menggunakan Bot dari Monteksz Jangan Lupa Bintangnya ^^{Fore.RESET}")
+    print(f"{Fore.GREEN}Cek Bot Lainnya di https://github.com/monteksz{Fore.RESET}")
+    print(f"{Fore.GREEN}=================================================================================================={Fore.RESET}")
+
+nama()
+
 def get_temp_email_address():
     response = requests.get('https://api.mail.tm/domains')
     if response.status_code != 200:
@@ -62,7 +89,7 @@ def request_otp(email):
 
 def verify_otp(email, otp):
     response = requests.post('https://api.pixelverse.xyz/api/auth/otp', json={'email': email, 'otpCode': otp})
-    if response.status_code == 201:
+    if response.status_code in [200, 201]:
         refresh_token_cookie = response.cookies.get('refresh-token')
         data = response.json()
         data['refresh_token'] = refresh_token_cookie
@@ -81,7 +108,7 @@ def set_referral(referral_code, access_token):
         'Cache-Control': 'no-cache',
         'Origin': 'https://dashboard.pixelverse.xyz',
         'Referer': 'https://dashboard.pixelverse.xyz/',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, seperti Gecko) Chrome/126.0.0.0 Safari/537.36'
     }
     referral_url = f'https://api.pixelverse.xyz/api/referrals/set-referer/{referral_code}'
     response = requests.put(referral_url, headers=headers)
@@ -97,9 +124,115 @@ def extract_otp(text):
         return match.group(0)
     return None
 
+def generate_username():
+    username = fake.user_name()[:14]
+    while len(username) < 5 or len(username) > 14:
+        username = fake.user_name()[:14]
+    return username
+
+def update_username_and_bio(access_token):
+    url = "https://api.pixelverse.xyz/api/users/@me"
+    headers = {
+        'Accept': 'application/json, text/plain, */*',
+        'Accept-Encoding': 'gzip, deflate, br, zstd',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Authorization': access_token,
+        'Cache-Control': 'no-cache',
+        'Content-Type': 'application/json',
+        'Origin': 'https://dashboard.pixelverse.xyz',
+        'Referer': 'https://dashboard.pixelverse.xyz/',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, seperti Gecko) Chrome/126.0.0.0 Safari/537.36'
+    }
+    username = generate_username()
+    biography = fake.sentence()
+    payload = {
+        "updateProfileOptions": {
+            "username": username,
+            "biography": biography
+        }
+    }
+    response = requests.patch(url, headers=headers, json=payload)
+    if response.status_code == 200:
+        print(Fore.GREEN + Style.BRIGHT + f"Username berhasil diperbarui menjadi: {username}")
+        print(Fore.GREEN + Style.BRIGHT + f"Bio berhasil diperbarui menjadi: {biography}")
+    else:
+        print(Fore.RED + Style.BRIGHT + f"Gagal memperbarui username. Status: {response.status_code}, Respon: {response.text}")
+    return response.status_code == 200
+
+def buy_pet(access_token, pet_id):
+    url = f"https://api.pixelverse.xyz/api/pets/{pet_id}/buy"
+    headers = {
+        'Authorization': access_token,
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json',
+        'Accept-Encoding': 'gzip, deflate, br, zstd',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Cache-Control': 'no-cache',
+        'Origin': 'https://dashboard.pixelverse.xyz',
+        'Referer': 'https://dashboard.pixelverse.xyz/',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, seperti Gecko) Chrome/126.0.0.0 Safari/537.36'
+    }
+    response = requests.post(url, headers=headers)
+    if response.status_code in [200, 201]:
+        print(Fore.GREEN + Style.BRIGHT + "Pet berhasil dibeli!")
+        return response.status_code, response.json()
+    else:
+        print(Fore.RED + Style.BRIGHT + f"Gagal membeli pet. Status: {response.status_code}, Respon: {response.text}")
+    return response.status_code, None
+
+def select_pet(access_token, pet_data):
+    pet_id = pet_data['id']
+    url = f"https://api.pixelverse.xyz/api/pets/user-pets/{pet_id}/select"
+    headers = {
+        'Authorization': access_token,
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json',
+        'Accept-Encoding': 'gzip, deflate, br, zstd',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Cache-Control': 'no-cache',
+        'Origin': 'https://dashboard.pixelverse.xyz',
+        'Referer': 'https://dashboard.pixelverse.xyz/',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, seperti Gecko) Chrome/126.0.0.0 Safari/537.36'
+    }
+    response = requests.post(url, headers=headers)
+    if response.status_code == 200:
+        print(Fore.GREEN + Style.BRIGHT + "Pet berhasil dipilih!")
+        return True
+    elif response.status_code == 201:
+        print(Fore.GREEN + Style.BRIGHT + "Pet sudah dipilih sebelumnya.")
+        return True
+    else:
+        print(Fore.RED + Style.BRIGHT + f"Gagal memilih pet. Status: {response.status_code}, Respon: {response.text}")
+    return False
+
+def claim_daily_reward(access_token):
+    url = "https://api.pixelverse.xyz/api/daily-reward/complete"
+    headers = {
+        'Authorization': access_token,
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json',
+        'Accept-Encoding': 'gzip, deflate, br, zstd',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Cache-Control': 'no-cache',
+        'Origin': 'https://dashboard.pixelverse.xyz',
+        'Referer': 'https://dashboard.pixelverse.xyz/',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, seperti Gecko) Chrome/126.0.0.0 Safari/537.36'
+    }
+    response = requests.post(url, headers=headers)
+    if response.status_code == 200:
+        print(Fore.GREEN + Style.BRIGHT + "Daily reward berhasil diklaim!")
+        return True
+    elif response.status_code == 201:
+        print(Fore.GREEN + Style.BRIGHT + "Daily reward berhasil diklaim!")
+        return True
+    else:
+        print(Fore.RED + Style.BRIGHT + f"Gagal mengklaim daily reward. Status: {response.status_code}, Respon: {response.text}")
+    return False
+
 def main():
     referral_code = input("Kode Referral: ")
     jumlah = int(input("Jumlah Referral: "))
+    pet_id = "27977f52-997c-45ce-9564-a2f585135ff5"
 
     for i in range(jumlah):
         email = get_temp_email_address()
@@ -112,7 +245,7 @@ def main():
             print(Fore.RED + Style.BRIGHT + "Gagal membuat email sementara.")
             return
 
-        print(Fore.GREEN + Style.BRIGHT + f"[{i+1}] Email sementara berhasil dibuat: {email}")
+        print(Fore.BLUE + Style.BRIGHT + f"[{i+1}] Email sementara berhasil dibuat: {email}")
 
         if request_otp(email):
             print(Fore.YELLOW + Style.BRIGHT + "OTP berhasil dikirim!")
@@ -148,11 +281,21 @@ def main():
                         print(Fore.GREEN + Style.BRIGHT + "Sukses mendapat token akses")
                     if refresh_token:
                         print(Fore.GREEN + Style.BRIGHT + "Sukses mendapat refresh token")
+                    
                     status_code, referral_response = set_referral(referral_code, access_token)
+                    
                     if status_code == 200:
-                        print(Fore.GREEN + Style.BRIGHT + f"[{i+1}] Referral berhasil!")
+                        referral_status = Fore.CYAN+ Style.BRIGHT + f"[{i+1}] Referral berhasil!"
                     else:
-                        print(Fore.RED + Style.BRIGHT + f"[{i+1}] Referral gagal!")
+                        referral_status = Fore.RED + Style.BRIGHT + f"[{i+1}] Referral gagal!"
+                    
+                    update_username_and_bio(access_token)
+                    
+                    status_code, pet_data = buy_pet(access_token, pet_id)
+                    if status_code in [200, 201] and pet_data:
+                        if select_pet(access_token, pet_data):
+                            if claim_daily_reward(access_token):
+                                print(referral_status)
                 else:
                     print(Fore.RED + Style.BRIGHT + "Verifikasi OTP gagal.")
             else:
