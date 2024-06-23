@@ -81,7 +81,7 @@ def set_referral(referral_code, access_token):
         'Cache-Control': 'no-cache',
         'Origin': 'https://dashboard.pixelverse.xyz',
         'Referer': 'https://dashboard.pixelverse.xyz/',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, seperti Gecko) Chrome/126.0.0.0 Safari/537.36'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'
     }
     referral_url = f'https://api.pixelverse.xyz/api/referrals/set-referer/{referral_code}'
     response = requests.put(referral_url, headers=headers)
@@ -147,7 +147,7 @@ def main():
                     if access_token:
                         print(Fore.GREEN + Style.BRIGHT + "Sukses mendapat token akses")
                     if refresh_token:
-                        print(Fore.GREEN + Style.BRIGHT + "Sukses mendapat token")
+                        print(Fore.GREEN + Style.BRIGHT + "Sukses mendapat refresh token")
                     status_code, referral_response = set_referral(referral_code, access_token)
                     if status_code == 200:
                         print(Fore.GREEN + Style.BRIGHT + f"[{i+1}] Referral berhasil!")
