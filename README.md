@@ -9,24 +9,20 @@
 
 - pip install -r requirements.txt
 
-- python main.py
-
-- Set Your Refferal Code
-
-- Set How Many Reff Do You Want
+- python reffupdate.py
 
 <h3 align="center">Tutorial How To Use This Bot(UPDATE)</h3>
 
 1. Buat Email outlook bisa @outlook.com / @hotmail.com (DISARANKAN JANGAN PAKAI EMAIL PRIBADI)(DAFTAR DI MODE INCOGNITO BIASANYA GK MINTA OTP)
-2. https://generator.email/blog/gmail-generator paste email dan ceklis yang + Gmail plus trick ( gmail dot tricknya off kan saja ) set Gmail aliases per page 8000 atau berapa supaya banyak
-3. copy trus masukan ke data.txt
-4. Jika sudah jalankan bot ( python reffupdate.py )
-5. Isi email dan passwrod yang daftar tadi
-6. isi reff code
-7. untuk pertama mau berapa reff masukan 3 saja (diisini akan gagal)
-8. masuk ke web email outlook 
-9. nanti otp akan ada di junk folder, buka salah satu terus klik This Not Junk ( ada di pojok kanan )
-10. mulai ulang botnya
+2. Jika sudah jalankan bot ( python reffupdate.py )
+3. Isi email dan passwrod yang daftar tadi
+4. Pilih generete email ( untuk pertama kali pilih 5 saja )
+5. masuk ke web email outlook 
+6. nanti otp akan ada di junk folder, buka salah satu terus klik This Not Junk ( ada di pojok kanan )
+7. mulai ulang botnya
+8. pilih generete email
+9. buat 1000 email ( bebas yang penting banyak aja )
+10. pilih y 
 11. DONE
 12. Ingat DWYOR.
 
