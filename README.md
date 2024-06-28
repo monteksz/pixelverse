@@ -17,14 +17,15 @@
 2. Jika sudah jalankan bot ( python reffupdate.py )
 3. Isi email dan passwrod yang daftar tadi
 4. Pilih generete email ( untuk pertama kali pilih 5 saja )
-5. masuk ke web email outlook 
-6. nanti otp akan ada di junk folder, buka salah satu terus klik This Not Junk ( ada di pojok kanan )
-7. mulai ulang botnya
-8. pilih generete email
-9. buat 1000 email ( bebas yang penting banyak aja )
-10. pilih y 
-11. DONE
-12. Ingat DWYOR.
+5. tunggu sampai muncul error
+6. masuk ke web email outlook 
+7. nanti otp akan ada di junk folder, buka salah satu terus klik This Not Junk ( ada di pojok kanan )
+8. mulai ulang botnya
+9. pilih generete email
+10. buat 1000 email ( bebas yang penting banyak aja )
+11. pilih y 
+12. DONE
+13. Ingat DWYOR.
 
 - **Here To get reff code**
 <img align="center" src="https://github.com/monteksz/PixelTap/blob/main/d.png">
