@@ -14,18 +14,14 @@
 <h3 align="center">Tutorial How To Use This Bot(UPDATE)</h3>
 
 1. Buat Email outlook bisa @outlook.com / @hotmail.com (DISARANKAN JANGAN PAKAI EMAIL PRIBADI)(DAFTAR DI MODE INCOGNITO BIASANYA GK MINTA OTP)
-2. Jika sudah jalankan bot ( python reffupdate.py )
-3. Isi email dan passwrod yang daftar tadi
-4. Pilih generete email ( untuk pertama kali pilih 5 saja )
-5. tunggu sampai muncul error
-6. masuk ke web email outlook 
-7. nanti otp akan ada di junk folder, buka salah satu terus klik This Not Junk ( ada di pojok kanan )
-8. mulai ulang botnya
-9. pilih generete email
-10. buat 1000 email ( bebas yang penting banyak aja )
-11. pilih y 
-12. DONE
-13. Ingat DWYOR.
+2. masukan code reff pixel di reff.txt
+3. Jika sudah jalankan bot ( python reffupdate.py )
+4. Isi email dan passwrod yang daftar tadi
+5. pilih generete email
+6. buat 1000 email ( bebas yang penting banyak aja )
+7. pilih y 
+8. DONE
+9. Ingat DWYOR.
 
 - **Here To get reff code**
 <img align="center" src="https://github.com/monteksz/PixelTap/blob/main/d.png">
