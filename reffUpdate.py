@@ -25,31 +25,33 @@ def connect_imap(username, password):
     mail.login(username, password)
     return mail
 
-# Fungsi untuk mencari email dengan subjek tertentu
-def search_email(mail, subject):
-    mail.select("inbox")
-    status, messages = mail.search(None, 'ALL')
-    email_ids = messages[0].split()
-    
-    for email_id in reversed(email_ids):
-        status, msg_data = mail.fetch(email_id, "(RFC822)")
-        for response_part in msg_data:
-            if isinstance(response_part, tuple):
-                msg = BytesParser(policy=policy.default).parsebytes(response_part[1])
-                msg_subject = decode_header(msg["Subject"])[0][0]
-                if isinstance(msg_subject, bytes):
-                    msg_subject = msg_subject.decode()
-                if subject in msg_subject:
-                    if msg.is_multipart():
-                        for part in msg.walk():
-                            content_type = part.get_content_type()
-                            if content_type == "text/plain":
-                                body = part.get_payload(decode=True).decode()
-                                return body
-                    else:
-                        body = msg.get_payload(decode=True).decode()
-                        return body
+def search_unseen_email(mail, subject):
+    folders = ["inbox", "junk"]
+    for folder in folders:
+        mail.select(folder)
+        status, messages = mail.search(None, 'UNSEEN')
+        email_ids = messages[0].split()
+
+        for email_id in reversed(email_ids):
+            status, msg_data = mail.fetch(email_id, "(RFC822)")
+            for response_part in msg_data:
+                if isinstance(response_part, tuple):
+                    msg = BytesParser(policy=policy.default).parsebytes(response_part[1])
+                    msg_subject = decode_header(msg["Subject"])[0][0]
+                    if isinstance(msg_subject, bytes):
+                        msg_subject = msg_subject.decode()
+                    if subject in msg_subject:
+                        if msg.is_multipart():
+                            for part in msg.walk():
+                                content_type = part.get_content_type()
+                                if content_type == "text/plain":
+                                    body = part.get_payload(decode=True).decode()
+                                    return body
+                        else:
+                            body = msg.get_payload(decode=True).decode()
+                            return body
     return None
+
 
 # Fungsi untuk mengekstrak OTP dari body email
 def extract_otp(body):
@@ -232,13 +234,13 @@ def main():
     print("Pilih opsi:")
     print("1. Generate email")
     print("2. Lanjutkan referral")
-    choice = int(input("Masukkan pilihan (1/2): "))
+    choice = int(input("Masukkan pilihan Anda (1/2): "))
 
     if choice == 1:
         count = int(input("Masukkan jumlah email yang akan di-generate: "))
         generate_emails(imap_username, count)
 
-        continue_choice = input("Email berhasil di-generate. Apakah ingin melanjutkan ke referral? (Y/N): ").strip().upper()
+        continue_choice = input("Email berhasil di-generate. Apakah Anda ingin melanjutkan ke referral? (Y/N): ").strip().upper()
         if continue_choice == 'Y':
             choice = 2
         else:
@@ -271,7 +273,7 @@ def main():
                 time.sleep(10)  # Tunggu beberapa detik agar email OTP dapat diterima
 
                 otp_subject = "Pixelverse Authorization"  # Sesuaikan dengan subjek email OTP yang diterima
-                otp_body = search_email(mail, otp_subject)
+                otp_body = search_unseen_email(mail, otp_subject)
 
                 if otp_body:
                     otp_code = extract_otp(otp_body)
