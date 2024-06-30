@@ -1,27 +1,22 @@
 <h1 align="center">Auto Reff Pixelverse ( DWYOR )</h1>
+
+![image](https://github.com/monteksz/pixelverse/assets/39762712/f07c6b47-dad7-48a0-985f-4424780034e7)
+
 <h3 align="center">Tutorial How To Use This Bot</h3>
 
-- https://dashboard.pixelverse.xyz/ Register
-
-- git clone **https://github.com/monteksz/pixelverse**
-
-- cd pixelverse
-
-- pip install -r requirements.txt
-
-- python reffupdate.py
-
-<h3 align="center">Tutorial How To Use This Bot(UPDATE)</h3>
-
-1. Buat Email outlook bisa @outlook.com / @hotmail.com (DISARANKAN JANGAN PAKAI EMAIL PRIBADI)(DAFTAR DI MODE INCOGNITO BIASANYA GK MINTA OTP)
-2. masukan code reff pixel di reff.txt
-3. Jika sudah jalankan bot ( python reffupdate.py )
-4. Isi email dan passwrod yang daftar tadi
-5. pilih generete email
-6. buat 1000 email ( bebas yang penting banyak aja )
-7. pilih y 
-8. DONE
-9. Ingat DWYOR.
+1. Register https://dashboard.pixelverse.xyz/
+2. git clone https://github.com/monteksz/pixelverse
+3. cd pixelverse
+4. pip install -r requirements.txt
+5. Buat Email outlook bisa @outlook.com / @hotmail.com (DISARANKAN JANGAN PAKAI EMAIL PRIBADI)(DAFTAR DI MODE INCOGNITO BIASANYA GK MINTA OTP)
+6. Masukan data login di akun.txt dengan format email|password ( Contoh: anton@outlook.com|antonkece )
+7. Masukan code reff pixel di reff.txt
+8. Jika sudah jalankan bot ( python main.py )
+9. Pilih generete email
+10. ( SEMAKIN BANYAK JUMLAH GENERETE EMAIL SEMAKIN BESAR JUGA SIZE FILE DATA.TXT ( REKOMEN 50000 SAJA ))
+11. Pilih Y
+12. DONE
+13. Ingat DWYOR.
 
 - **Here To get reff code**
 <img align="center" src="https://github.com/monteksz/PixelTap/blob/main/d.png">
