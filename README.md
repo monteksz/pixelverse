@@ -1,6 +1,6 @@
 <h1 align="center">Auto Reff Pixelverse ( DWYOR )</h1>
 
-<img align="center" src="https://github.com/monteksz/pixelverse/assets/39762712/f07c6b47-dad7-48a0-985f-4424780034e7">
+<img align="center" src="https://github.com/monteksz/pixelverse/assets/39762712/0d3e1f56-a28e-47f5-873e-280cd4c348b2">
 
 <h3 align="center">Tutorial How To Use This Bot</h3>
 
