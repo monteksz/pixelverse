@@ -1,23 +1,30 @@
+import imaplib
+import email
+from email.header import decode_header
+from email import policy
+from email.parser import BytesParser
 import requests
 import time
-import random
-from faker import Faker
 import re
 from colorama import Fore, Style, init
+from faker import Faker
+import random
+import string
 
+# Inisialisasi colorama dan Faker
 init(autoreset=True)
 fake = Faker()
 
 def nama():
     art_lines = [
-        "   ___  ___            _       _               ______       _   ",
-        "  |  \\/  |           | |     | |              | ___ \\     | |  ",
-        "  | .  . | ___  _ __ | |_ ___| | _____ ____   | |_/ / ___ | |_ ",
-        "  | |\\/| |/ _ \\| '_ \\| __/ _ \\ |/ / __|_  /   | ___ \\/ _ \\| __|",
-        "  | |  | | (_) | | | | ||  __/   <\\__ \\/ /    | |_/ / (_) | |_ ",
-        "  \\_|  |_|\\___/|_| |_|\\__\\___|_|\\_\\___/___|   \\____/ \\___/ \\__|",
-        "                                                                ",
-        "                                                                "
+        "   _____         _   _  _____ _______ _    _         _______     __",
+        "  / ____|  /\\   | \\ | |/ ____|__   __| |  | |  /\\   |  __ \\ \\   / /",
+        " | (___   /  \\  |  \\| | |       | |  | |  | | /  \\  | |__) \\ \\_/ / ",
+        "  \\___ \\ / /\\ \\ | . ` | |       | |  | |  | |/ /\\ \\ |  _  / \\   /  ",
+        "  ____) / ____ \\| |\\  | |____   | |  | |__| / ____ \\| | \\ \\  | |   ",
+        " |_____/_/    \\_\\_| \\_|\\_____|  |_|   \\____/_/    \\_\\_|  \\_\\ |_|   ",
+        "                                                                   ",
+        "                                                                   "
     ]
 
     max_length = max(len(line) for line in art_lines)
@@ -29,78 +36,103 @@ def nama():
         print(f"# {line} #")
     print(border)
 
-    print(f"{Fore.GREEN}Terima kasih Telah Menggunakan Bot dari Monteksz Jangan Lupa Bintangnya ^^{Fore.RESET}")
+    print(f"{Fore.GREEN}Terima kasih Telah Menggunakan Bot dari Monteksz X Sanctuary Jangan Lupa Bintangnya ^^{Fore.RESET}")
     print(f"{Fore.GREEN}Cek Bot Lainnya di https://github.com/monteksz{Fore.RESET}")
     print(f"{Fore.GREEN}=================================================================================================={Fore.RESET}")
 
 nama()
 
-def get_temp_email_address():
-    response = requests.get('https://api.mail.tm/domains')
-    if response.status_code != 200:
-        print(Fore.RED + Style.BRIGHT + "Gagal mendapatkan domain email.")
-        print(Fore.RED + Style.BRIGHT + "Respon:", response.text)
-        return None
-    data = response.json()
-    if not data or 'hydra:member' not in data or len(data['hydra:member']) == 0:
-        print(Fore.RED + Style.BRIGHT + "Tidak ada domain email yang tersedia.")
-        return None
-    domain = data['hydra:member'][0]['domain']
-    email_prefix = fake.user_name() + str(random.randint(1000, 9999))
-    email_address = f"{email_prefix}@{domain}"
-    return email_address
+# Fungsi untuk membaca kredensial dari akun.txt
+def get_credentials_from_file():
+    try:
+        with open('akun.txt', 'r') as file:
+            credentials = file.read().strip()
+            imap_username, imap_password = credentials.split('|')
+            return imap_username, imap_password
+    except Exception as e:
+        print(Fore.RED + Style.BRIGHT + f"Gagal membaca kredensial dari akun.txt: {str(e)}")
+        return None, None
 
-def create_temp_email(email_address):
-    response = requests.post('https://api.mail.tm/accounts', json={
-        'address': email_address,
-        'password': 'password123'
-    })
-    if response.status_code != 201:
-        print(Fore.RED + Style.BRIGHT + "Gagal membuat email sementara.")
-        print(Fore.RED + Style.BRIGHT + "Respon:", response.text)
-        return None, None, None
-    data = response.json()
-    return data.get('address'), 'password123', data.get('id')
+# Ambil kredensial dari file akun.txt
+imap_username, imap_password = get_credentials_from_file()
 
-def get_access_token(email, password):
-    response = requests.post('https://api.mail.tm/token', json={
-        'address': email,
-        'password': password
-    })
-    if response.status_code != 200:
-        print(Fore.RED + Style.BRIGHT + "Gagal mendapatkan token akses.")
-        print(Fore.RED + Style.BRIGHT + "Respon:", response.text)
-        return None
-    return response.json().get('token')
+# Jika gagal membaca kredensial dari file, minta input dari pengguna
+if not imap_username or not imap_password:
+    imap_username = input("Masukan Email Hotmail/Outlook: ")
+    imap_password = input("Masukan Password: ")
+else:
+    print(Fore.BLUE + Style.BRIGHT + f"Email yang digunakan untuk login: {imap_username}")
 
-def get_latest_email(token):
-    headers = {'Authorization': f'Bearer {token}'}
-    response = requests.get('https://api.mail.tm/messages', headers=headers)
-    if response.status_code != 200:
-        print(Fore.RED + Style.BRIGHT + "Gagal mendapatkan email terbaru.")
-        print(Fore.RED + Style.BRIGHT + "Respon:", response.text)
-        return None
-    messages = response.json().get('hydra:member', [])
-    return messages[0] if messages else None
+# Fungsi untuk menghubungkan dan login ke IMAP
+def connect_imap(username, password):
+    mail = imaplib.IMAP4_SSL("imap-mail.outlook.com")
+    mail.login(username, password)
+    return mail
 
+def search_unseen_email(mail, subject):
+    folders = ["inbox", "junk"]
+    for folder in folders:
+        mail.select(folder)
+        status, messages = mail.search(None, 'UNSEEN')
+        email_ids = messages[0].split()
+
+        for email_id in reversed(email_ids):
+            status, msg_data = mail.fetch(email_id, "(RFC822)")
+            for response_part in msg_data:
+                if isinstance(response_part, tuple):
+                    msg = BytesParser(policy=policy.default).parsebytes(response_part[1])
+                    msg_subject = decode_header(msg["Subject"])[0][0]
+                    if isinstance(msg_subject, bytes):
+                        msg_subject = msg_subject.decode()
+                    if subject in msg_subject:
+                        if msg.is_multipart():
+                            for part in msg.walk():
+                                content_type = part.get_content_type()
+                                if content_type == "text/plain":
+                                    body = part.get_payload(decode=True).decode()
+                                    return body
+                        else:
+                            body = msg.get_payload(decode=True).decode()
+                            return body
+    return None
+
+# Fungsi untuk mengekstrak OTP dari body email
+def extract_otp(body):
+    otp_match = re.search(r'Here is your Pixelverse OTP: (\d+)', body)
+    if otp_match:
+        return otp_match.group(1)
+    return None
+
+# Fungsi untuk mengirim permintaan OTP
 def request_otp(email):
     response = requests.post('https://api.pixelverse.xyz/api/otp/request', json={'email': email})
     return response.status_code == 200
 
+# Fungsi untuk memverifikasi OTP
 def verify_otp(email, otp):
     response = requests.post('https://api.pixelverse.xyz/api/auth/otp', json={'email': email, 'otpCode': otp})
     if response.status_code in [200, 201]:
         refresh_token_cookie = response.cookies.get('refresh-token')
-        data = response.json()
+        try:
+            data = response.json()
+        except ValueError:
+            print(f"Respon JSON tidak valid untuk {email}. Status: {response.status_code}, Respon: {response.text}")
+            return None
+
         data['refresh_token'] = refresh_token_cookie
-        return data
+        if 'tokens' in data and 'access' in data['tokens']:
+            data['access_token'] = data['tokens']['access']
+            return data
+        else:
+            print(f"Respon tidak mengandung tokens['access'] untuk {email}. Respon: {data}")
     else:
-        print(Fore.RED + Style.BRIGHT + f"Verifikasi OTP gagal. Status: {response.status_code}, Respon: {response.text}")
+        print(f"Verifikasi OTP gagal. Status: {response.status_code}, Respon: {response.text}")
     return None
 
+# Fungsi untuk mengatur referral
 def set_referral(referral_code, access_token):
     headers = {
-        'Authorization': access_token,
+        'Authorization': access_token,  # tanpa 'Bearer'
         'Accept': 'application/json, text/plain, */*',
         'Content-Type': 'application/json',
         'Accept-Encoding': 'gzip, deflate, br, zstd',
@@ -118,18 +150,7 @@ def set_referral(referral_code, access_token):
         response_json = None
     return response.status_code, response_json
 
-def extract_otp(text):
-    match = re.search(r'\b\d{6}\b', text)
-    if match:
-        return match.group(0)
-    return None
-
-def generate_username():
-    username = fake.user_name()[:14]
-    while len(username) < 5 or len(username) > 14:
-        username = fake.user_name()[:14]
-    return username
-
+# Fungsi untuk memperbarui username dan biography
 def update_username_and_bio(access_token):
     url = "https://api.pixelverse.xyz/api/users/@me"
     headers = {
@@ -143,7 +164,7 @@ def update_username_and_bio(access_token):
         'Referer': 'https://dashboard.pixelverse.xyz/',
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, seperti Gecko) Chrome/126.0.0.0 Safari/537.36'
     }
-    username = generate_username()
+    username = fake.user_name()
     biography = fake.sentence()
     payload = {
         "updateProfileOptions": {
@@ -159,6 +180,7 @@ def update_username_and_bio(access_token):
         print(Fore.RED + Style.BRIGHT + f"Gagal memperbarui username. Status: {response.status_code}, Respon: {response.text}")
     return response.status_code == 200
 
+# Fungsi untuk membeli pet
 def buy_pet(access_token, pet_id):
     url = f"https://api.pixelverse.xyz/api/pets/{pet_id}/buy"
     headers = {
@@ -178,8 +200,9 @@ def buy_pet(access_token, pet_id):
         return response.status_code, response.json()
     else:
         print(Fore.RED + Style.BRIGHT + f"Gagal membeli pet. Status: {response.status_code}, Respon: {response.text}")
-    return response.status_code, None
+    return None, None
 
+# Fungsi untuk memilih pet
 def select_pet(access_token, pet_data):
     pet_id = pet_data['id']
     url = f"https://api.pixelverse.xyz/api/pets/user-pets/{pet_id}/select"
@@ -201,10 +224,14 @@ def select_pet(access_token, pet_data):
     elif response.status_code == 201:
         print(Fore.GREEN + Style.BRIGHT + "Pet sudah dipilih sebelumnya.")
         return True
+    elif response.status_code == 400 and response.json().get('message') == "You have already selected this pet":
+        print(Fore.GREEN + Style.BRIGHT + "Pet berhasil dipilih!")
+        return True
     else:
         print(Fore.RED + Style.BRIGHT + f"Gagal memilih pet. Status: {response.status_code}, Respon: {response.text}")
     return False
 
+# Fungsi untuk mengklaim daily reward
 def claim_daily_reward(access_token):
     url = "https://api.pixelverse.xyz/api/daily-reward/complete"
     headers = {
@@ -218,92 +245,127 @@ def claim_daily_reward(access_token):
         'Referer': 'https://dashboard.pixelverse.xyz/',
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, seperti Gecko) Chrome/126.0.0.0 Safari/537.36'
     }
-    response = requests.post(url, headers=headers)
-    if response.status_code == 200:
-        print(Fore.GREEN + Style.BRIGHT + "Daily reward berhasil diklaim!")
-        return True
-    elif response.status_code == 201:
-        print(Fore.GREEN + Style.BRIGHT + "Daily reward berhasil diklaim!")
-        return True
-    else:
-        print(Fore.RED + Style.BRIGHT + f"Gagal mengklaim daily reward. Status: {response.status_code}, Respon: {response.text}")
+    try:
+        response = requests.post(url, headers=headers)
+        if response.status_code in [200, 201]:
+            print(Fore.GREEN + Style.BRIGHT + "Daily reward berhasil diklaim!")
+            return True
+        else:
+            print(Fore.RED + Style.BRIGHT + f"Gagal mengklaim daily reward. Status: {response.status_code}, Respon: {response.text}")
+    except Exception as e:
+        print(Fore.RED + Style.BRIGHT + f"Gagal mengklaim daily reward: {str(e)}")
     return False
 
+# Fungsi untuk menghasilkan email dengan tambahan 3-8 huruf acak
+def generate_email(base_email):
+    email_parts = base_email.split('@')
+    random_string = ''.join(random.choices(string.ascii_lowercase, k=random.randint(3, 8)))
+    generated_email = f"{email_parts[0]}+{random_string}@{email_parts[1]}"
+    return generated_email
+
+# Fungsi utama untuk generate email
+def generate_emails(base_email, count):
+    generated_emails = [generate_email(base_email) for _ in range(count)]
+    with open('data.txt', 'w') as file:
+        for email in generated_emails:
+            file.write(email + '\n')
+    print(Fore.GREEN + Style.BRIGHT + f"{count} email berhasil di-generate dan disimpan di data.txt.")
+
 def main():
-    referral_code = input("Kode Referral: ")
-    jumlah = int(input("Jumlah Referral: "))
-    pet_id = "27977f52-997c-45ce-9564-a2f585135ff5"
+    # Pilihan menu
+    print("Pilih opsi:")
+    print("1. Generate email")
+    print("2. Lanjutkan referral")
+    choice = int(input("Masukkan pilihan Anda (1/2): "))
 
-    for i in range(jumlah):
-        email = get_temp_email_address()
-        if not email:
-            print(Fore.RED + Style.BRIGHT + "Gagal membuat email sementara.")
-            return
-        
-        email, password, account_id = create_temp_email(email)
-        if not email:
-            print(Fore.RED + Style.BRIGHT + "Gagal membuat email sementara.")
-            return
+    if choice == 1:
+        count = int(input("Masukkan jumlah email yang akan di-generate: "))
+        generate_emails(imap_username, count)
 
-        print(Fore.BLUE + Style.BRIGHT + f"[{i+1}] Email sementara berhasil dibuat: {email}")
-
-        if request_otp(email):
-            print(Fore.YELLOW + Style.BRIGHT + "OTP berhasil dikirim!")
+        continue_choice = input("Email berhasil di-generate. Apakah Anda ingin melanjutkan ke referral? (Y/N): ").strip().upper()
+        if continue_choice == 'Y':
+            choice = 2
         else:
-            print(Fore.RED + Style.BRIGHT + "Gagal mengirim permintaan OTP.")
+            print(Fore.GREEN + Style.BRIGHT + "Proses dihentikan.")
             return
 
-        token = get_access_token(email, password)
-        if not token:
-            print(Fore.RED + Style.BRIGHT + "Gagal mendapatkan token akses.")
-            return
+    if choice == 2:
+        # Baca daftar email dari file data.txt
+        with open('data.txt', 'r') as file:
+            emails = [line.strip() for line in file.readlines()]
 
-        print(Fore.YELLOW + Style.BRIGHT + "Menunggu email OTP...")
-        otp_email = None
-        for _ in range(10):
-            otp_email = get_latest_email(token)
-            if otp_email:
+        # Baca referral code dari file reff.txt
+        with open('reff.txt', 'r') as file:
+            referral_code = file.read().strip()
+
+        # Hitung jumlah email yang ada di file data.txt
+        desired_referrals = len(emails)
+
+        # Hubungkan ke IMAP
+        mail = connect_imap(imap_username, imap_password)
+
+        # Proses setiap email
+        successful_emails = []
+        for index, email in enumerate(emails, start=1):
+            if len(successful_emails) >= desired_referrals:
                 break
-            time.sleep(10)
+            print(Fore.CYAN + Style.BRIGHT + f"Proses email Ke-{index}: {email}")
+            if request_otp(email):
+                print(Fore.YELLOW + Style.BRIGHT + f"OTP diminta untuk {email}. Tunggu beberapa detik...")
+                time.sleep(10)  # Tunggu beberapa detik agar email OTP dapat diterima
 
-        if otp_email:
-            print(Fore.YELLOW + Style.BRIGHT + "Email OTP diterima!")
-            otp_content = otp_email.get('text', otp_email.get('intro', ''))
-            otp = extract_otp(otp_content)
-            if otp:
-                print(Fore.YELLOW + Style.BRIGHT + f"Kode OTP: {otp}")
+                otp_subject = "Pixelverse Authorization"  # Sesuaikan dengan subjek email OTP yang diterima
+                otp_body = search_unseen_email(mail, otp_subject)
 
-                verification_result = verify_otp(email, otp)
-                if verification_result:
-                    access_token = verification_result.get('tokens', {}).get('access')
-                    refresh_token = verification_result.get('refresh_token')
-                    if access_token:
-                        print(Fore.GREEN + Style.BRIGHT + "Sukses mendapat token akses")
-                    if refresh_token:
-                        print(Fore.GREEN + Style.BRIGHT + "Sukses mendapat refresh token")
-                    
-                    status_code, referral_response = set_referral(referral_code, access_token)
-                    
-                    if status_code == 200:
-                        referral_status = Fore.CYAN+ Style.BRIGHT + f"[{i+1}] Referral berhasil!"
+                if otp_body:
+                    otp_code = extract_otp(otp_body)
+                    if otp_code:
+                        print(Fore.GREEN + Style.BRIGHT + f"OTP diterima: {otp_code}")
+                        auth_data = verify_otp(email, otp_code)
+
+                        if auth_data and 'access_token' in auth_data:
+                            access_token = auth_data['access_token']
+                            print(Fore.GREEN + Style.BRIGHT + f"Token akses diterima")
+                            status_code, response_json = set_referral(referral_code, access_token)
+                            if status_code in [200, 201]:
+                                print(Fore.GREEN + Style.BRIGHT + "Referral set berhasil.")
+                                if update_username_and_bio(access_token):
+                                    pet_id = "27977f52-997c-45ce-9564-a2f585135ff5"
+                                    pet_status, pet_data = buy_pet(access_token, pet_id)
+                                    if pet_status in [200, 201]:
+                                        if select_pet(access_token, pet_data):
+                                            if claim_daily_reward(access_token):
+                                                print(Fore.BLUE + Style.BRIGHT + f"Refferal Ke-{index} Berhasil")
+                                                successful_emails.append(email)
+                            else:
+                                print(Fore.RED + Style.BRIGHT + f"Referral set gagal untuk {email}. Status: {status_code}, Respon: {response_json}")
+                                print(Fore.RED + Style.BRIGHT + f"Refferal Ke-{index} Gagal")
+                        else:
+                            print(Fore.RED + Style.BRIGHT + f"Verifikasi OTP gagal untuk {email}. Tidak ada access_token dalam respon.")
+                            print(Fore.RED + Style.BRIGHT + f"Refferal Ke-{index} Gagal")
                     else:
-                        referral_status = Fore.RED + Style.BRIGHT + f"[{i+1}] Referral gagal!"
-                    
-                    update_username_and_bio(access_token)
-                    
-                    status_code, pet_data = buy_pet(access_token, pet_id)
-                    if status_code in [200, 201] and pet_data:
-                        if select_pet(access_token, pet_data):
-                            if claim_daily_reward(access_token):
-                                print(referral_status)
+                        print(Fore.RED + Style.BRIGHT + f"Tidak dapat mengekstrak OTP untuk {email}.")
+                        print(Fore.RED + Style.BRIGHT + f"Refferal Ke-{index} Gagal")
                 else:
-                    print(Fore.RED + Style.BRIGHT + "Verifikasi OTP gagal.")
+                    print(Fore.RED + Style.BRIGHT + f"Tidak dapat menemukan email OTP untuk {email}.")
+                    print(Fore.RED + Style.BRIGHT + f"Refferal Ke-{index} Gagal")
             else:
-                print(Fore.RED + Style.BRIGHT + "Gagal mengekstrak OTP dari email.")
-        else:
-            print(Fore.RED + Style.BRIGHT + "Email OTP tidak diterima dalam batas waktu.")
+                print(Fore.RED + Style.BRIGHT + f"Permintaan OTP gagal untuk {email}.")
+                print(Fore.RED + Style.BRIGHT + f"Refferal Ke-{index} Gagal")
 
-        time.sleep(5)
+        # Filter email yang gagal
+        failed_emails = [email for email in emails if email not in successful_emails]
 
+        # Tulis ulang email yang gagal ke file data.txt
+        with open('data.txt', 'w') as file:
+            for email in failed_emails:
+                file.write(email + '\n')
+
+        # Logout dari server IMAP
+        mail.logout()
+    else:
+        print(Fore.RED + Style.BRIGHT + "Pilihan tidak valid.")
+
+# Jalankan fungsi utama
 if __name__ == "__main__":
     main()
