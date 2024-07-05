@@ -24,8 +24,11 @@
 <img align="center" src="https://github.com/monteksz/PixelTap/blob/main/d.png">
 
 <h3 align="center">Support ^^</h3>
+<h3 align="center">You can support me using trakter or qris</h3>
 
 <a href="https://trakteer.id/monteksz/link">Trakter Cendol</a>
+
+
 
 <img align="center" src="https://github.com/monteksz/pixelverse/assets/39762712/6ecb6c71-9bbc-49b7-a8af-a84df9fd04bc">
 
