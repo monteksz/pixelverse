@@ -6,6 +6,10 @@
 
 <a href="https://trakteer.id/monteksz/link">Trakter Cendol</a>
 
+<img align="center" src="https://github.com/monteksz/pixelverse/assets/39762712/307d3582-42c5-45e1-a33d-0b3c6e9a99f7">
+
+
+
 <h3 align="center">Tutorial How To Use This Bot</h3>
 
 1. Register https://dashboard.pixelverse.xyz/
