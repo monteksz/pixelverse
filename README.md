@@ -4,7 +4,7 @@
 
 <h3 align="center">Support ^^</h3>
 
-<a href="teer.id/monteksz">Trakter Cendol</a>
+<a href="https://trakteer.id/monteksz/link">Trakter Cendol</a>
 
 <h3 align="center">Tutorial How To Use This Bot</h3>
 
