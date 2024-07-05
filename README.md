@@ -2,6 +2,10 @@
 
 <img align="center" src="https://github.com/monteksz/pixelverse/assets/39762712/0d3e1f56-a28e-47f5-873e-280cd4c348b2">
 
+<h3 align="center">Support ^^</h3>
+
+<a href="teer.id/monteksz">Trakter Cendol</a>
+
 <h3 align="center">Tutorial How To Use This Bot</h3>
 
 1. Register https://dashboard.pixelverse.xyz/
