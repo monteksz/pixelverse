@@ -2,12 +2,6 @@
 
 <img align="center" src="https://github.com/monteksz/pixelverse/assets/39762712/0d3e1f56-a28e-47f5-873e-280cd4c348b2">
 
-<h3 align="center">Support ^^</h3>
-
-<a href="https://trakteer.id/monteksz/link">Trakter Cendol</a>
-
-<img align="center" src="https://github.com/monteksz/pixelverse/assets/39762712/307d3582-42c5-45e1-a33d-0b3c6e9a99f7">
-
 
 
 <h3 align="center">Tutorial How To Use This Bot</h3>
@@ -28,6 +22,12 @@
 
 - **Here To get reff code**
 <img align="center" src="https://github.com/monteksz/PixelTap/blob/main/d.png">
+
+<h3 align="center">Support ^^</h3>
+
+<a href="https://trakteer.id/monteksz/link">Trakter Cendol</a>
+
+<img align="center" src="https://github.com/monteksz/pixelverse/assets/39762712/6ecb6c71-9bbc-49b7-a8af-a84df9fd04bc">
 
 <h3 align="left">Languages</h3>
 <p align="left"> <a href="https://www.python.org" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" alt="python" width="40" height="40"/> </a> </p>
